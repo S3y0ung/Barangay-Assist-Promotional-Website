@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="BarangayAssist is a mobile app and admin dashboard for barangay document requests, appointments and concerns.">
+<title>BarangayAssist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: split hero (promise left, working phone right), then a ruled feature list,
+     a four-step flow, a dashboard preview, and a navy demo band with contact details. */
+  :root{
+    --bg:#F3F6FB;
+    --surface:#FFFFFF;
+    --ink:#0E2240;
+    --sub:#51627D;
+    --line:#D9E2F0;
+    --navy:#0B2E5C;
+    --navy-2:#12417D;
+    --on-navy:#FFFFFF;
+    --on-navy-sub:#C5D5EE;
+    --red:#C93232;
+    --red-ink:#FFFFFF;
+    --chip:#E7EFFC;
+    --chip-ink:#2A5BBE;
+    --good:#177A47;  --good-bg:#E1F4E9;
+    --warn:#9A6208;  --warn-bg:#FBEED6;
+    --info:#2A5BBE;  --info-bg:#E7EFFC;
+    --new:#B52B2B;   --new-bg:#FBE6E6;
+    --font-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+    --font-body:'Figtree','Segoe UI',system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#09152A; --surface:#10213D; --ink:#E9F0FB; --sub:#9FB2D1; --line:#21365B;
+      --navy:#12417D; --navy-2:#1B5199; --on-navy:#FFFFFF; --on-navy-sub:#C5D5EE;
+      --red:#E5524F; --red-ink:#1A0707; --chip:#17305A; --chip-ink:#9DBEFF;
+      --good:#5BD08F; --good-bg:#12372A; --warn:#F0BE62; --warn-bg:#3A2B0F;
+      --info:#9DBEFF; --info-bg:#17305A; --new:#FF8C8A; --new-bg:#42191B;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#09152A; --surface:#10213D; --ink:#E9F0FB; --sub:#9FB2D1; --line:#21365B;
+    --navy:#12417D; --navy-2:#1B5199; --on-navy:#FFFFFF; --on-navy-sub:#C5D5EE;
+    --red:#E5524F; --red-ink:#1A0707; --chip:#17305A; --chip-ink:#9DBEFF;
+    --good:#5BD08F; --good-bg:#12372A; --warn:#F0BE62; --warn-bg:#3A2B0F;
+    --info:#9DBEFF; --info-bg:#17305A; --new:#FF8C8A; --new-bg:#42191B;
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:16px; line-height:1.6;
+    margin:0;
+    padding-left:max(16px, env(safe-area-inset-left, 0px));
+    padding-right:max(16px, env(safe-area-inset-right, 0px));
+    padding-block:0;
+  }
+  a{color:inherit;}
+  :focus-visible{outline:3px solid var(--red); outline-offset:3px; border-radius:6px;}
+  .wrap{max-width:1120px; margin:0 auto;}
+  h1,h2,h3{font-family:var(--font-display); margin:0; text-wrap:balance; letter-spacing:-.015em; line-height:1.08;}
+  p{margin:0;}
+  .eyebrow{font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--red);}
+
+  /* Nav */
+  .nav{display:flex; align-items:center; justify-content:space-between; gap:16px; padding-block:20px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:11px; text-decoration:none;}
+  .seal{width:40px; height:40px; border-radius:50%; background:var(--navy); display:grid; place-items:center; flex-shrink:0;}
+  .brand-name{font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:.01em;}
+  .brand-name b{color:var(--red); font-weight:800;}
+  .nav-links{display:flex; align-items:center; gap:22px; font-size:14.5px; font-weight:600; color:var(--sub);}
+  .nav-links a{text-decoration:none;}
+  .nav-links a:hover{color:var(--ink);}
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:13px 22px; border-radius:10px; font-weight:700; font-size:15px; text-decoration:none; border:2px solid transparent; cursor:pointer; font-family:var(--font-body); transition:transform .15s, background .15s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn.primary{background:var(--red); color:var(--red-ink);}
+  .btn.ghost{border-color:var(--line); color:var(--ink); background:transparent;}
+  .btn.ghost:hover{border-color:var(--navy);}
+  .btn.small{padding:9px 16px; font-size:14px;}
+
+  /* Hero */
+  .hero{display:grid; grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr); gap:48px; align-items:center; padding-block:36px 72px;}
+  .hero h1{font-size:clamp(2.4rem, 5.4vw, 4.1rem); font-weight:800; margin-top:14px;}
+  .hero h1 em{font-style:normal; color:var(--red);}
+  .lede{margin-top:22px; font-size:18px; color:var(--sub); max-width:34em;}
+  .cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:30px;}
+  .docs-line{margin-top:34px; padding-top:20px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px;}
+  .docs-line span.lbl{width:100%; font-size:12.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--sub);}
+  .pill{font-size:13.5px; font-weight:600; background:var(--chip); color:var(--chip-ink); padding:6px 13px; border-radius:99px;}
+
+  /* Phone mock */
+  .phone-stage{display:flex; justify-content:center;}
+  .phone{width:min(100%, 300px); background:var(--surface); border:9px solid #10203A; border-radius:38px; overflow:hidden; box-shadow:0 30px 60px -24px rgba(11,46,92,.45); position:relative;}
+  .phone::before{content:""; position:absolute; top:0; left:50%; transform:translateX(-50%); width:104px; height:20px; background:#10203A; border-radius:0 0 13px 13px; z-index:2;}
+  .ph-top{background:var(--navy); color:var(--on-navy); padding:32px 18px 18px; border-radius:0 0 22px 22px;}
+  .ph-top b{font-family:var(--font-display); font-size:18px; display:block;}
+  .ph-top small{font-size:12px; color:var(--on-navy-sub);}
+  .ph-body{padding:14px 14px 0; background:var(--bg);}
+  .ph-banner{background:var(--navy-2); color:var(--on-navy); border-radius:14px; padding:16px 12px; text-align:center; font-family:var(--font-display); font-weight:700; font-size:13px; line-height:1.35;}
+  .ph-label{font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--sub); margin:16px 0 8px;}
+  .ph-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .ph-tile{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:11px 10px; font-size:12px; font-weight:600; display:flex; flex-direction:column; gap:7px;}
+  .ph-tile i{width:28px; height:28px; border-radius:8px; display:grid; place-items:center; background:var(--chip); color:var(--chip-ink);}
+  .ph-tile.r i{background:var(--new-bg); color:var(--new);}
+  .ph-tile.g i{background:var(--good-bg); color:var(--good);}
+  .ph-tile.a i{background:var(--warn-bg); color:var(--warn);}
+  .ph-ann{margin-top:8px; background:var(--surface); border:1px solid var(--line); border-radius:11px; padding:10px 11px; font-size:12px;}
+  .ph-ann b{display:block; font-size:12px;}
+  .ph-ann small{color:var(--sub); font-size:11px;}
+  .ph-nav{display:flex; background:var(--surface); border-top:1px solid var(--line); margin:14px -14px 0;}
+  .ph-nav span{flex:1; text-align:center; padding:9px 0 10px; font-size:10.5px; color:var(--sub);}
+  .ph-nav span.on{color:var(--navy); font-weight:700;}
+  :root[data-theme="dark"] .ph-nav span.on{color:var(--chip-ink);}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .ph-nav span.on{color:var(--chip-ink);} }
+
+  /* Sections */
+  section{padding-block:72px;}
+  .sec-head{max-width:40em; margin-bottom:40px;}
+  .sec-head h2{font-size:clamp(1.8rem, 3.6vw, 2.7rem); font-weight:800; margin-top:12px;}
+  .sec-head p{margin-top:14px; color:var(--sub); font-size:17px;}
+
+  /* Features: ruled list */
+  .feat{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:0 40px;}
+  .feat article{padding:24px 0 30px; border-top:2px solid var(--ink);}
+  .feat h3{font-size:1.28rem; font-weight:700;}
+  .feat p{margin-top:10px; color:var(--sub); font-size:15.5px;}
+  .feat .ex{margin-top:14px; font-size:13px; font-weight:600; color:var(--chip-ink); background:var(--chip); display:inline-block; padding:4px 10px; border-radius:6px;}
+
+  /* How it works */
+  .how{background:var(--surface); border-block:1px solid var(--line); margin-inline:calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline:max(16px, env(safe-area-inset-left, 0px));}
+  .steps{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:20px; list-style:none; padding:0; margin:0; counter-reset:s;}
+  .steps li{counter-increment:s; position:relative; padding-top:54px;}
+  .steps li::before{content:counter(s); position:absolute; top:0; left:0; width:38px; height:38px; border-radius:50%; background:var(--navy); color:var(--on-navy); display:grid; place-items:center; font-family:var(--font-display); font-weight:800; font-size:17px;}
+  .steps li::after{content:""; position:absolute; top:19px; left:50px; right:-10px; height:2px; background:var(--line);}
+  .steps li:last-child::after{display:none;}
+  .steps h3{font-size:1.1rem; font-weight:700;}
+  .steps p{margin-top:8px; font-size:15px; color:var(--sub);}
+
+  /* Dashboard preview */
+  .dash{background:var(--surface); border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:0 24px 50px -30px rgba(11,46,92,.4);}
+  .dash-bar{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 20px; background:var(--navy); color:var(--on-navy); font-size:14px; font-weight:600; flex-wrap:wrap;}
+  .dash-bar span.tag{font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--on-navy-sub);}
+  .kpis{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:1px; background:var(--line);}
+  .kpi{background:var(--surface); padding:18px 20px;}
+  .kpi small{display:block; font-size:11.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--sub);}
+  .kpi b{font-family:var(--font-display); font-size:2rem; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.2;}
+  .kpi.p b{color:var(--warn);} .kpi.r b{color:var(--good);} .kpi.t b{color:var(--info);}
+  .tbl-wrap{overflow-x:auto;}
+  table{width:100%; border-collapse:collapse; min-width:560px;}
+  th{text-align:left; font-size:11.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--sub); padding:12px 20px; background:var(--bg); border-block:1px solid var(--line);}
+  td{padding:13px 20px; font-size:14.5px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums;}
+  tr:last-child td{border-bottom:none;}
+  .st{font-size:12px; font-weight:700; padding:4px 11px; border-radius:99px; white-space:nowrap;}
+  .st.pending{background:var(--warn-bg); color:var(--warn);}
+  .st.approved,.st.resolved{background:var(--good-bg); color:var(--good);}
+  .st.progress{background:var(--info-bg); color:var(--info);}
+  .st.new{background:var(--new-bg); color:var(--new);}
+  .dash-note{padding:12px 20px; font-size:13px; color:var(--sub); border-top:1px solid var(--line);}
+
+  /* Demo band */
+  .band{background:var(--navy); color:var(--on-navy); margin-inline:calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline:max(16px, env(safe-area-inset-left, 0px)); padding-block:72px;}
+  .band-grid{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr); gap:48px; align-items:center;}
+  .band h2{font-size:clamp(1.9rem, 4vw, 3rem); font-weight:800;}
+  .band p{margin-top:16px; color:var(--on-navy-sub); font-size:17px; max-width:32em;}
+  .contact{background:var(--navy-2); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:24px;}
+  .contact h3{font-size:1.1rem; font-weight:700; margin-bottom:16px;}
+  .c-row{padding:12px 0; border-top:1px solid rgba(255,255,255,.16);}
+  .c-row small{display:block; font-size:11.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--on-navy-sub);}
+  .c-row .val{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:19px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .c-row .val.plain{font-size:16px; font-weight:600;}
+  .copy{border:1.5px solid rgba(255,255,255,.4); background:transparent; color:var(--on-navy); font:600 13px var(--font-body); padding:6px 12px; border-radius:8px; cursor:pointer;}
+  .copy:hover{background:rgba(255,255,255,.12);}
+
+  footer{padding-block:28px 40px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:13.5px; color:var(--sub);}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:minmax(0,1fr); gap:40px; padding-bottom:56px;}
+    .feat{grid-template-columns:minmax(0,1fr);}
+    .steps{grid-template-columns:minmax(0,1fr) minmax(0,1fr); row-gap:32px;}
+    .steps li::after{display:none;}
+    .band-grid{grid-template-columns:minmax(0,1fr); gap:32px;}
+    .kpis{grid-template-columns:repeat(2, minmax(0,1fr));}
+    .nav-links a.hide-s{display:none;}
+    section{padding-block:56px;}
+  }
+  @media (max-width:520px){
+    .steps{grid-template-columns:minmax(0,1fr);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;} .btn{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="nav">
+    <a class="brand" href="#top" aria-label="BarangayAssist home">
+      <span class="seal" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+      </span>
+      <span class="brand-name">BARANGAY<b>ASSIST</b></span>
+    </a>
+    <nav class="nav-links" aria-label="Page sections">
+      <a class="hide-s" href="#features">Features</a>
+      <a class="hide-s" href="#how">How it works</a>
+      <a class="hide-s" href="#dashboard">Dashboard</a>
+      <a class="btn primary small" href="#contact">Request a demo</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Serbisyong Tapat, Barangay ng Bayan.</div>
+        <h1>Clearances, appointments and concerns, handled <em>from the phone.</em></h1>
+        <p class="lede">BarangayAssist is a mobile app for residents and a dashboard for barangay staff. Residents skip the long line. Staff replace paper logbooks with one place to approve, schedule and follow up.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#contact">Request a free demo</a>
+          <a class="btn ghost" href="#how">See how it works</a>
+        </div>
+        <div class="docs-line">
+          <span class="lbl">Documents residents can request</span>
+          <span class="pill">Barangay Clearance</span>
+          <span class="pill">Certificate of Residency</span>
+          <span class="pill">Certificate of Indigency</span>
+          <span class="pill">Business Permit Endorsement</span>
+        </div>
+      </div>
+
+      <div class="phone-stage" aria-hidden="true">
+        <div class="phone">
+          <div class="ph-top"><b>Hello, Juan!</b><small>Brgy. Socorro, Quezon City</small></div>
+          <div class="ph-body">
+            <div class="ph-banner">TAPAT NA SERBISYO,<br>PARA SA ATING BARANGAY.</div>
+            <div class="ph-label">Quick Services</div>
+            <div class="ph-grid">
+              <div class="ph-tile"><i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></i>Request Document</div>
+              <div class="ph-tile g"><i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i>Book Appointment</div>
+              <div class="ph-tile r"><i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></i>Report Concern</div>
+              <div class="ph-tile a"><i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11v2a1 1 0 0 0 1 1h3l6 4V6L8 10H5a1 1 0 0 0-1 1z"/><path d="M18 9a4 4 0 0 1 0 6"/></svg></i>Announcements</div>
+            </div>
+            <div class="ph-label">Latest Announcements</div>
+            <div class="ph-ann"><b>Barangay Clean-Up Drive</b><small>Sample date · 8:00 AM</small></div>
+            <div class="ph-ann"><b>Schedule of Flag Raising</b><small>Every Monday · 7:00 AM</small></div>
+            <div class="ph-nav"><span class="on">Home</span><span>Requests</span><span>Reports</span><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section id="features">
+    <div class="sec-head">
+      <div class="eyebrow">What it does</div>
+      <h2>Everything a resident asks the barangay for, in one app</h2>
+      <p>Each service has a matching screen in the staff dashboard, so nothing a resident submits gets lost between the window and the logbook.</p>
+    </div>
+    <div class="feat">
+      <article>
+        <h3>Request documents</h3>
+        <p>Residents pick the document, see the requirements, and submit. They get a reference number and a notice when it is ready for pickup.</p>
+        <span class="ex">Sample ref: BA-2024-0128</span>
+      </article>
+      <article>
+        <h3>Book appointments</h3>
+        <p>Pickups and visits get a date and time slot. Staff confirm from the dashboard, and the day's schedule is visible at a glance.</p>
+        <span class="ex">Pickup: 9:00 AM, Confirmed</span>
+      </article>
+      <article>
+        <h3>Report concerns</h3>
+        <p>Potholes, broken streetlights and uncollected garbage are reported with a photo and the purok. Staff assign each one and update its status.</p>
+        <span class="ex">New, In Progress, Resolved</span>
+      </article>
+      <article>
+        <h3>Post announcements</h3>
+        <p>Clean-up drives, flag raising schedules and vaccination drives are posted once and appear on every resident's home screen. Drafts stay hidden until published.</p>
+        <span class="ex">Draft or Published</span>
+      </article>
+      <article>
+        <h3>Know your residents</h3>
+        <p>A searchable list by purok with contact numbers, request history and verification status, so staff can confirm who is asking.</p>
+        <span class="ex">Verified or Pending Verification</span>
+      </article>
+      <article>
+        <h3>See the whole picture</h3>
+        <p>The dashboard totals requests, pending items, resolved reports and today's appointments, so the captain can see the workload without opening a logbook.</p>
+        <span class="ex">Totals update as staff act</span>
+      </article>
+    </div>
+  </section>
+</div>
+
+<div class="how" id="how">
+  <div class="wrap">
+    <section>
+      <div class="sec-head">
+        <div class="eyebrow">How it works</div>
+        <h2>From a phone tap to a signed document</h2>
+      </div>
+      <ol class="steps">
+        <li><h3>Resident submits</h3><p>Chooses a document or describes a concern, then sends it from the app.</p></li>
+        <li><h3>Staff review</h3><p>The request appears in the dashboard marked Pending, with the resident's details.</p></li>
+        <li><h3>Staff approve</h3><p>One tap approves a request, confirms an appointment, or assigns a concern.</p></li>
+        <li><h3>Resident is notified</h3><p>The status changes in the app and the resident knows when to pick up or what was fixed.</p></li>
+      </ol>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="dashboard">
+    <div class="sec-head">
+      <div class="eyebrow">For barangay staff</div>
+      <h2>One dashboard instead of a stack of logbooks</h2>
+      <p>Pending items are marked in amber so they are the first thing staff see each morning.</p>
+    </div>
+    <div class="dash">
+      <div class="dash-bar"><span>BarangayAssist Admin</span><span class="tag">Sample data</span></div>
+      <div class="kpis">
+        <div class="kpi t"><small>Total requests</small><b>128</b></div>
+        <div class="kpi p"><small>Pending requests</small><b>35</b></div>
+        <div class="kpi r"><small>Resolved reports</small><b>76</b></div>
+        <div class="kpi"><small>Appointments today</small><b>12</b></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Reference</th><th>Resident</th><th>Document</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>BA-2024-0128</td><td>Juan Dela Cruz</td><td>Barangay Clearance</td><td><span class="st pending">Pending</span></td></tr>
+            <tr><td>BA-2024-0127</td><td>Maria Santos</td><td>Certificate of Residency</td><td><span class="st pending">Pending</span></td></tr>
+            <tr><td>BA-2024-0126</td><td>Pedro Reyes</td><td>Certificate of Indigency</td><td><span class="st approved">Approved</span></td></tr>
+            <tr><td>BA-2024-0125</td><td>Ana Garcia</td><td>Barangay Clearance</td><td><span class="st approved">Approved</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="dash-note">Names and numbers shown here are sample data from the prototype.</div>
+    </div>
+  </section>
+</div>
+
+<div class="band" id="contact">
+  <div class="wrap band-grid">
+    <div>
+      <div class="eyebrow" style="color:var(--on-navy-sub)">Free demo</div>
+      <h2 style="margin-top:12px">See it running for your barangay.</h2>
+      <p>Book a free 15-minute demo. We walk your staff through the resident app and the dashboard, then answer your questions about setup.</p>
+    </div>
+    <div class="contact">
+      <h3>Contact us</h3>
+      <div class="c-row">
+        <small>Call or text</small>
+        <div class="val"><span id="phone-num">0917 123 4567</span><button class="copy" id="copy-btn" type="button">Copy number</button></div>
+      </div>
+      <div class="c-row">
+        <small>Service area</small>
+        <div class="val plain">Brgy. Socorro, Quezon City</div>
+      </div>
+      <div class="c-row">
+        <small>Tagline</small>
+        <div class="val plain">Serbisyong Tapat, Barangay ng Bayan.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <footer>
+    <span>BarangayAssist</span>
+    <span>Prototype and sample data for demonstration.</span>
+  </footer>
+</div>
+
+<script>
+  (function(){
+    var btn = document.getElementById('copy-btn');
+    var num = document.getElementById('phone-num');
+    if(!btn || !num) return;
+    function fallback(){
+      try{
+        var r = document.createRange(); r.selectNodeContents(num);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        btn.textContent = 'Number selected';
+      }catch(e){ btn.textContent = 'Select the number'; }
+    }
+    btn.addEventListener('click', function(){
+      var text = num.textContent.trim();
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){ btn.textContent = 'Copied'; }, fallback);
+      }else{ fallback(); }
+      setTimeout(function(){ btn.textContent = 'Copy number'; }, 2200);
+    });
+  })();
+</script>
+
+</body>
+</html>
